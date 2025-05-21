@@ -3,78 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory game</title>
+    <title>Memory Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-        <section>
-            <h1>Igra memorije</h1>
-            <span id="vreme">0</span>
-            <br><br>
-            <input type="text" name="" id="korisnickoIme" placeholder="Unesite korisnicko ime">
+    <section>
+        <h1>Memory Game</h1>
+        <span id="time">0</span>
+        <br><br>
+        <input type="text" id="username" placeholder="Enter your username">
 
-            <br><br>
-            <input type="radio" name="tezina" id="lako" value="lako" checked> 
-            <label for="lako">Lako</label>
-            <input type="radio" name="tezina" id="srednje" value="srednje">
-            <label for="srednje">Srednje</label>
-            <input type="radio" name="tezina" id="tesko" value="tesko">
-            <label for="tesko">Teško</label>
-            <input type="radio" name="tezina" id="expert" value="expert">
-            <label for="expert">Ekspert</label>
-            <br><br>
+        <br><br>
+        <input type="radio" name="difficulty" id="easy" value="easy" checked>
+        <label for="easy">Easy</label>
+        <input type="radio" name="difficulty" id="medium" value="medium">
+        <label for="medium">Medium</label>
+        <input type="radio" name="difficulty" id="hard" value="hard">
+        <label for="hard">Hard</label>
+        <input type="radio" name="difficulty" id="expert" value="expert">
+        <label for="expert">Expert</label>
+        <br><br>
 
-            <main>
-                <div id="ispisSlika"></div>
-                <div id="ispisPoledjina"></div>
-            </main>
-        </section>
+        <main>
+            <div id="imageDisplay"></div>
+            <div id="backsideDisplay"></div>
+        </main>
+    </section>
 
-        <section id="tabela">
-            <h3>Najbolji rezultati</h3>
-            <div id="tezina">
-                <button id="lako">Lako</button>
-                <button id="srednje">Srednje</button>
-                <button id="tesko">Teško</button>
-                <button id="expert">Ekspert</button>
-            </div>
-            <br>
+    <section id="scoreboard">
+        <h3>Best Results</h3>
+        <div id="difficultyButtons">
+            <button id="easy">Easy</button>
+            <button id="medium">Medium</button>
+            <button id="hard">Hard</button>
+            <button id="expert">Expert</button>
+        </div>
+        <br>
 
-            <table>
-                <tr id="prviRed">
-                    <td>Mesto</td>
-                    <td>Korisničko ime</td>
-                    <td>Vreme</td>
-                </tr>
-                <tr>
-                    <td>1.</td>
-                    <td id="ime1"></td>
-                    <td id="vreme1"></td>
-                </tr>
-                <tr>
-                    <td>2.</td>
-                    <td id="ime2"></td>
-                    <td id="vreme2"></td>
-                </tr>
-                <tr>
-                    <td>3.</td>
-                    <td id="ime3"></td>
-                    <td id="vreme3"></td>
-                </tr>
-                <tr>
-                    <td>4.</td>
-                    <td id="ime4"></td>
-                    <td id="vreme4"></td>
-                </tr>
-                <tr>
-                    <td>5.</td>
-                    <td id="ime5"></td>
-                    <td id="vreme5"></td>
-                </tr>
-            </table>
-        </section>
+        <table>
+            <tr id="headerRow">
+                <td>Place</td>
+                <td>Username</td>
+                <td>Time</td>
+            </tr>
+            <tr>
+                <td>1.</td>
+                <td id="name1"></td>
+                <td id="time1"></td>
+            </tr>
+            <tr>
+                <td>2.</td>
+                <td id="name2"></td>
+                <td id="time2"></td>
+            </tr>
+            <tr>
+                <td>3.</td>
+                <td id="name3"></td>
+                <td id="time3"></td>
+            </tr>
+            <tr>
+                <td>4.</td>
+                <td id="name4"></td>
+                <td id="time4"></td>
+            </tr>
+            <tr>
+                <td>5.</td>
+                <td id="name5"></td>
+                <td id="time5"></td>
+            </tr>
+        </table>
+    </section>
 
     <script src="script.js"></script>
 </body>
 </html>
+
 
