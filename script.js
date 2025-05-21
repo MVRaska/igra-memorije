@@ -1,355 +1,304 @@
-let inKorisnikIme = document.getElementById('korisnickoIme');
-let radios = document.querySelectorAll('input[type="radio"]');
-let imgs = document.querySelectorAll('img');
-let dIspisPoledjina = document.getElementById('ispisPoledjina');
-let dIspisSlika = document.getElementById('ispisSlika');
-let span = document.querySelector('span');
-let btns = document.querySelectorAll('button');
+const inputUsername = document.getElementById('username');
+const radios = document.querySelectorAll('input[type="radio"]');
+const imgs = document.querySelectorAll('img');
+const backsideDisplay = document.getElementById('backsideDisplay');
+const imageDisplay = document.getElementById('imageDisplay');
+const span = document.querySelector('span');
+const btns = document.querySelectorAll('button');
 
-let nizSrc = [];
-for(let i = 0; i < 50; i++) {
-    nizSrc[i] = i + 1;
+const imageSources = [];
+for (let i = 0; i < 50; i++) {
+    imageSources[i] = i + 1;
 }
 
-let mix = niz => {
-    let mixNiz =[];
-    for(let i = niz.length; i > 0 ; i--) {
-        let index = Math.floor(Math.random() * i);
-        mixNiz[i - 1] = niz[index];
-        niz[index] = niz[i - 1];
+const shuffle = arr => {
+    const shuffled = [];
+    for (let i = arr.length; i > 0; i--) {
+        const index = Math.floor(Math.random() * i);
+        shuffled[i - 1] = arr[index];
+        arr[index] = arr[i - 1];
     }
-    return mixNiz;
-}
+    return shuffled;
+};
 
-let mixSrc = mix(nizSrc);
-let srcPolja = [];
+const shuffledSources = shuffle(imageSources);
+let cardPairs = [];
 
-let generisanjeSlika = brParova => {
-    
-    srcPolja = mixSrc.slice(0, brParova);
-    srcPolja = srcPolja.concat(srcPolja);
+const generateImages = pairCount => {
+    cardPairs = shuffledSources.slice(0, pairCount);
+    cardPairs = cardPairs.concat(cardPairs);
+    const shuffledCards = shuffle(cardPairs);
 
-    let mixSrcPolja = mix(srcPolja);
-            
-    for(let i = 0; i < mixSrcPolja.length; i++) {
-        let slika = document.createElement('img');
-        slika.src = `img/${mixSrcPolja[i]}.png`;
-        slika.style.margin = slika.style.width * 0.07;
-        dIspisSlika.appendChild(slika);   
-        if((i + 1) % Math.sqrt(2 * brParova) == 0) {
-            dIspisSlika.appendChild(document.createElement('br'));
-        } 
-    } 
-}
-
-let generisanjePoledjine = brParova => {
-    for(let i = 0; i < 2 * brParova; i++) {
-        let slika = document.createElement('img');
-        slika.src = 'img/bg1.jpg';
-        dIspisPoledjina.appendChild(slika);  
-        if((i + 1) % Math.sqrt(2 * brParova) == 0) {
-            dIspisPoledjina.appendChild(document.createElement('br'));;
-        }  
+    for (let i = 0; i < shuffledCards.length; i++) {
+        const img = document.createElement('img');
+        img.src = `img/${shuffledCards[i]}.png`;
+        img.style.margin = img.style.width * 0.07;
+        imageDisplay.appendChild(img);
+        if ((i + 1) % Math.sqrt(2 * pairCount) === 0) {
+            imageDisplay.appendChild(document.createElement('br'));
+        }
     }
-}
+};
 
-let velicinaSlika = tezina => {
-    let slike = document.querySelectorAll('img');
-    let procenatSirine;
-    
-    switch (tezina) {
-        case 'lako':
-            procenatSirine = 20;
+const generateBackside = pairCount => {
+    for (let i = 0; i < 2 * pairCount; i++) {
+        const img = document.createElement('img');
+        img.src = 'img/bg1.jpg';
+        backsideDisplay.appendChild(img);
+        if ((i + 1) % Math.sqrt(2 * pairCount) === 0) {
+            backsideDisplay.appendChild(document.createElement('br'));
+        }
+    }
+};
+
+const setCardSize = difficulty => {
+    const images = document.querySelectorAll('img');
+    let widthPercent;
+
+    switch (difficulty) {
+        case 'easy':
+            widthPercent = 20;
             break;
-        case 'srednje':
-            procenatSirine = 14;
+        case 'medium':
+            widthPercent = 14;
             break;
-        case 'tesko':
-            procenatSirine = 10;
+        case 'hard':
+            widthPercent = 10;
             break;
         case 'expert':
-            procenatSirine = 9;
+            widthPercent = 9;
             break;
         default:
-            procenatSirine = 20;
+            widthPercent = 20;
     }
 
-    slike.forEach(slika => {
-        slika.style.width = `${procenatSirine}%`;
-        slika.style.height = `auto`;
-        slika.style.marginRight = `${procenatSirine * 0.1}%`;
-        slika.style.marginBottom = `${procenatSirine * 0.06}%`;
+    images.forEach(img => {
+        img.style.width = `${widthPercent}%`;
+        img.style.height = `auto`;
+        img.style.marginRight = `${widthPercent * 0.1}%`;
+        img.style.marginBottom = `${widthPercent * 0.06}%`;
     });
-}
-generisanjePoledjine(8);
-generisanjeSlika(8);
-velicinaSlika('lako');
+};
 
-let vreme;
-let sekunde = -1;
-let brojParova = [];
-let brKlikova = 0;
+generateBackside(8);
+generateImages(8);
+setCardSize('easy');
 
-let generisanjeSlikaIPoledjina = () => {
-    dIspisSlika.innerHTML = '';
-    dIspisPoledjina.innerHTML = '';
-    brojParova = [];
-    brKlikova = 0;
+let timer;
+let seconds = -1;
+let matchedPairs = [];
+let clickCount = 0;
 
-    vreme =  setInterval(() => {
-        sekunde++;
-        span.innerHTML = sekunde;
+const generateBoard = () => {
+    imageDisplay.innerHTML = '';
+    backsideDisplay.innerHTML = '';
+    matchedPairs = [];
+    clickCount = 0;
+
+    timer = setInterval(() => {
+        seconds++;
+        span.innerHTML = seconds;
     }, 1000);
 
     radios.forEach(radio => {
-        if(radio.value == 'lako' && radio.checked) {
-            generisanjePoledjine(8);
-            generisanjeSlika(8);
-            velicinaSlika('lako');
-        } else if(radio.value == 'srednje' && radio.checked) {
-            generisanjePoledjine(18);
-            generisanjeSlika(18);
-            velicinaSlika('srednje');
-        } else if(radio.value == 'tesko' && radio.checked) {
-            generisanjePoledjine(32);
-            generisanjeSlika(32);
-            velicinaSlika('tesko');
-        } else if(radio.value == 'expert' && radio.checked) {
-            generisanjePoledjine(50);
-            generisanjeSlika(50);
-            velicinaSlika('expert');
+        if (radio.value === 'easy' && radio.checked) {
+            generateBackside(8);
+            generateImages(8);
+            setCardSize('easy');
+        } else if (radio.value === 'medium' && radio.checked) {
+            generateBackside(18);
+            generateImages(18);
+            setCardSize('medium');
+        } else if (radio.value === 'hard' && radio.checked) {
+            generateBackside(32);
+            generateImages(32);
+            setCardSize('hard');
+        } else if (radio.value === 'expert' && radio.checked) {
+            generateBackside(50);
+            generateImages(50);
+            setCardSize('expert');
         }
     });
-}
+};
 
-
-inKorisnikIme.addEventListener('keypress', e => {
-    
-    if(e.key == 'Enter') {
+inputUsername.addEventListener('keypress', e => {
+    if (e.key === 'Enter') {
         e.preventDefault();
-        
-        if(inKorisnikIme.value != '' && inKorisnikIme.value != null && inKorisnikIme.value.length < 20) {
-
-            if(vreme) {
-                clearInterval(vreme);
-                sekunde = -1;
+        if (inputUsername.value !== '' && inputUsername.value.length < 20) {
+            if (timer) {
+                clearInterval(timer);
+                seconds = -1;
             }
-
-            generisanjeSlikaIPoledjina();
-            
+            generateBoard();
         } else {
-            alert('Korisničko ime nije ispravno uneseno!');
+            alert('Invalid username!');
         }
     }
 });
 
 radios.forEach(radio => {
     radio.addEventListener('change', () => {
-        if (inKorisnikIme.value != '' && inKorisnikIme.value != null && inKorisnikIme.value.length < 20) {
-            if (vreme) {
-                clearInterval(vreme);
-                sekunde = -1;
+        if (inputUsername.value !== '' && inputUsername.value.length < 20) {
+            if (timer) {
+                clearInterval(timer);
+                seconds = -1;
             }
-            generisanjeSlikaIPoledjina();
+            generateBoard();
         } else {
-            alert('Korisničko ime nije ispravno uneseno!');
+            alert('Invalid username!');
         }
     });
 });
 
-let otvoreneSlike = [];
-let kliknutePoledjine = [];
-let igraAktivna = true;
-let odgovor;
-let nizKorisnika = JSON.parse(localStorage.getItem('korisnici')) || [];
+let openCards = [];
+let clickedBacksides = [];
+let gameActive = true;
+let confirmNewGame;
+let users = JSON.parse(localStorage.getItem('users')) || [];
 
-dIspisPoledjina.addEventListener('click', e => {
-    if(e.target.tagName == 'IMG' && igraAktivna && inKorisnikIme.value != null && inKorisnikIme.value != '' && inKorisnikIme.value.length < 20) {
-        let slikaPozadina = e.target;
+backsideDisplay.addEventListener('click', e => {
+    if (e.target.tagName === 'IMG' && gameActive && inputUsername.value !== '' && inputUsername.value.length < 20) {
+        const backside = e.target;
+        const index = Array.from(backside.parentNode.children).indexOf(backside);
+        backside.classList.add('disabled');
+        clickedBacksides.push(backside);
 
-        let index = Array.from(slikaPozadina.parentNode.children).indexOf(slikaPozadina);
-        slikaPozadina.classList.add('iskljuceno');
-        kliknutePoledjine.push(slikaPozadina);
+        const frontImage = imageDisplay.children[index];
+        openCards.push(frontImage);
 
-        let slika = dIspisSlika.children[index];
-        otvoreneSlike.push(slika);
+        clickCount++;
 
-        brKlikova++;
+        if (clickCount === 2) {
+            gameActive = false;
 
-        if(brKlikova === 2) {
-            igraAktivna = false;
-
-            if(otvoreneSlike[0].src != otvoreneSlike[1].src) {
+            if (openCards[0].src !== openCards[1].src) {
                 setTimeout(() => {
-                    kliknutePoledjine.forEach(poledjina => {
-                        poledjina.classList.remove('iskljuceno');
+                    clickedBacksides.forEach(bg => {
+                        bg.classList.remove('disabled');
                     });
-                    otvoreneSlike = [];
-                    kliknutePoledjine = []
-                    brKlikova = 0;
-                    igraAktivna = true;
+                    openCards = [];
+                    clickedBacksides = [];
+                    clickCount = 0;
+                    gameActive = true;
                 }, 1000);
             } else {
-                brojParova. push(1);
-                otvoreneSlike = [];
-                kliknutePoledjine = [];
-                brKlikova = 0;
-                igraAktivna = true;
+                matchedPairs.push(1);
+                openCards = [];
+                clickedBacksides = [];
+                clickCount = 0;
+                gameActive = true;
 
                 setTimeout(() => {
                     radios.forEach(radio => {
-                        if(radio.value == 'lako' && radio.checked && brojParova.length == 8 ||
-                        radio.value == 'srednje' && radio.checked && brojParova.length == 18 ||
-                        radio.value == 'tesko' && radio.checked && brojParova.length == 32 ||
-                        radio.value == 'expert' && radio.checked && brojParova.length == 50) {
-        
-                            odgovor = window.confirm('Kraj igre! Da li želite novu igru?');
-                            brojParova = [];
-        
-                            let korisnik = {};
-                            korisnik.ime = inKorisnikIme.value;
-                            radios.forEach(radio => {
-                                if(radio.value == 'lako' && radio.checked) {
-                                    korisnik.tezina = 'lako';
-                                } else if(radio.value == 'srednje' && radio.checked) {
-                                    korisnik.tezina = 'srednje';
-                                } else if(radio.value == 'tesko' && radio.checked) {
-                                    korisnik.tezina = 'tesko';
-                                } else if(radio.value == 'expert' && radio.checked) {
-                                    korisnik.tezina = 'expert';
-                                }
+                        if (
+                            (radio.value === 'easy' && radio.checked && matchedPairs.length === 8) ||
+                            (radio.value === 'medium' && radio.checked && matchedPairs.length === 18) ||
+                            (radio.value === 'hard' && radio.checked && matchedPairs.length === 32) ||
+                            (radio.value === 'expert' && radio.checked && matchedPairs.length === 50)
+                        ) {
+                            confirmNewGame = window.confirm('Game over! Do you want to start a new game?');
+                            matchedPairs = [];
+
+                            const user = {
+                                name: inputUsername.value,
+                                difficulty: radio.value,
+                                time: seconds
+                            };
+
+                            users = JSON.parse(localStorage.getItem('users')) || [];
+                            users.push(user);
+                            if (users.length > 40) {
+                                users.shift();
+                            }
+                            localStorage.setItem('users', JSON.stringify(users));
+
+                            clearInterval(timer);
+                            seconds = -1;
+
+                            const topUsers = JSON.parse(localStorage.getItem('users')) || [];
+                            const filtered = {
+                                easy: [],
+                                medium: [],
+                                hard: [],
+                                expert: []
+                            };
+
+                            topUsers.forEach(u => {
+                                filtered[u.difficulty].push(u);
                             });
-                            korisnik.vreme = sekunde;
-                            nizKorisnika = JSON.parse(localStorage.getItem('korisnici')) || [];
-                            
-                            let nizLako = nizKorisnika.filter(korisnik => korisnik.tezina == 'lako').map(korisnik => korisnik.vreme);
-                            let najboljiLako;
-                            if (nizLako.length > 0) {
-                                najboljiLako = Math.min(...nizLako);
-                            }
-                            let nizSrednje = nizKorisnika.filter(korisnik => korisnik.tezina == 'srednje').map(korisnik => korisnik.vreme);
-                            let najboljiSrednje;
-                            if (nizSrednje.length > 0) {
-                                najboljiSrednje = Math.min(...nizSrednje);
-                            }
-                            let nizTesko = nizKorisnika.filter(korisnik => korisnik.tezina == 'tesko').map(korisnik => korisnik.vreme);
-                            let najboljiTesko;
-                            if(nizTesko.length > 0){
-                                najboljiTesko = Math.min(...nizTesko);
-                            }
-                            
-                            let nizExpert = nizKorisnika.filter(korisnik => korisnik.tezina == 'expert').map(korisnik => korisnik.vreme);
-                            let najboljiExpert;
-                            if(nizExpert.length > 0){
-                                najboljiExpert = Math.min(...nizExpert);
-                            }
-                            
-                            nizKorisnika.push(korisnik);
-                            if(nizKorisnika.length > 40) {
-                                nizKorisnika.shift();
-                            } 
-                            localStorage.setItem('korisnici', JSON.stringify(nizKorisnika));
-        
-                            clearInterval(vreme);
-                            sekunde =  -1;
-        
-                            let nizKorisnika40 = JSON.parse(localStorage.getItem('korisnici'));
-                            let nizKorisnikaLako =[];
-                            let nizKorisnikaSrednje =[];
-                            let nizKorisnikaTesko =[];
-                            let nizKorisnikaExpert =[];
-        
-                            nizKorisnika40.forEach(korisnik => {
-                                if(korisnik.tezina == 'lako') {
-                                    nizKorisnikaLako.push(korisnik);
-                                } else if(korisnik.tezina == 'srednje') {
-                                    nizKorisnikaSrednje.push(korisnik);
-                                } else if(korisnik.tezina == 'tesko') {
-                                    nizKorisnikaTesko.push(korisnik);
-                                } else {
-                                    nizKorisnikaExpert.push(korisnik);
-                                }
-                            });
-        
-                            let sortiran;
-                            radios.forEach(radio => {
-                                if(radio.value == 'lako' && radio.checked) {
-                                    sortiran = rastuciNiz(nizKorisnikaLako);
-                                    if (korisnik.vreme < najboljiLako) {
-                                        console.log(korisnik.ime);
-                                        alert(`Bravo! Najbolji rezultat u kategoriju težine igre 'lako'!`);
+
+                            let sorted;
+                            radios.forEach(r => {
+                                if (r.value === 'easy' && r.checked) {
+                                    sorted = sortByTime(filtered.easy);
+                                    if (user.time < Math.min(...filtered.easy.map(u => u.time))) {
+                                        alert("Congratulations! Best time in 'easy' difficulty!");
                                     }
-                                } else if(radio.value == 'srednje' && radio.checked) {
-                                    sortiran = rastuciNiz(nizKorisnikaSrednje);
-                                    if (korisnik.vreme < najboljiSrednje) {
-                                        alert(`Bravo! Najbolji rezultat u kategoriju težine igre 'srednje'!`);
+                                } else if (r.value === 'medium' && r.checked) {
+                                    sorted = sortByTime(filtered.medium);
+                                    if (user.time < Math.min(...filtered.medium.map(u => u.time))) {
+                                        alert("Congratulations! Best time in 'medium' difficulty!");
                                     }
-                                } else if(radio.value == 'tesko' && radio.checked) {
-                                    sortiran = rastuciNiz(nizKorisnikaTesko);
-                                    if (korisnik.vreme < najboljiTesko) {
-                                        alert(`Bravo! Najbolji rezultat u kategoriju težine igre 'teško'!`);
+                                } else if (r.value === 'hard' && r.checked) {
+                                    sorted = sortByTime(filtered.hard);
+                                    if (user.time < Math.min(...filtered.hard.map(u => u.time))) {
+                                        alert("Congratulations! Best time in 'hard' difficulty!");
                                     }
-                                } else if(radio.value == 'expert' && radio.checked) {
-                                    sortiran = rastuciNiz(nizKorisnikaExpert);
-                                    if (korisnik.vreme < najboljiExpert) {
-                                        alert(`Bravo! Najbolji rezultat u kategoriju težine igre 'ekspert'!`);
+                                } else if (r.value === 'expert' && r.checked) {
+                                    sorted = sortByTime(filtered.expert);
+                                    if (user.time < Math.min(...filtered.expert.map(u => u.time))) {
+                                        alert("Congratulations! Best time in 'expert' difficulty!");
                                     }
                                 }
                             });
-                                
-                            for(let i = 0; i < 5; i++) {
-                                document.getElementById(`ime${i + 1}`).innerHTML = sortiran[i] ? sortiran[i].ime : '';
-                                document.getElementById(`vreme${i + 1}`).innerHTML = sortiran[i] ? sortiran[i].vreme : '';
+
+                            for (let i = 0; i < 5; i++) {
+                                document.getElementById(`name${i + 1}`).innerHTML = sorted[i] ? sorted[i].name : '';
+                                document.getElementById(`time${i + 1}`).innerHTML = sorted[i] ? sorted[i].time : '';
                             }
-                           
-                            if(odgovor) {
-                                generisanjeSlikaIPoledjina();
+
+                            if (confirmNewGame) {
+                                generateBoard();
                             }
-                        } 
+                        }
                     });
-                }, 10);  
+                }, 10);
             }
         }
     }
 });
 
-let rastuciNiz = niz => {
-    for(let i = 0; i < niz.length; i++) {
-        for(let j = i; j < niz.length; j++) {
-            if(niz[i].vreme > niz[j].vreme) {
-                let pomocna = niz[i];
-                niz[i] = niz[j];
-                niz[j] = pomocna;
+const sortByTime = arr => {
+    for (let i = 0; i < arr.length; i++) {
+        for (let j = i; j < arr.length; j++) {
+            if (arr[i].time > arr[j].time) {
+                const temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
             }
         }
     }
-    return niz;
-}
-
-let top5 = (tezina) => {
-    let nizKorisnika = [];
-    nizKorisnika = JSON.parse(localStorage.getItem('korisnici'));
-    if (nizKorisnika) { // Dodatna provera da li postoje podaci u lokalnom skladištu
-        let nizKorisnikaTezina = nizKorisnika.filter(korisnik => korisnik.tezina === tezina) || [];
-        if (nizKorisnikaTezina.length > 0) { // Dodatna provera da li postoje podaci za odabranu težinu
-            let sortiranNiz = rastuciNiz(nizKorisnikaTezina);
-
-            for (let i = 0; i < 5; i++) {
-                document.getElementById(`ime${i + 1}`).innerHTML = sortiranNiz[i] ? sortiranNiz[i].ime : '';
-                document.getElementById(`vreme${i + 1}`).innerHTML = sortiranNiz[i] ? sortiranNiz[i].vreme : '';
-            }
-        }  else {
-            for (let i = 0; i < 5; i++) {
-                document.getElementById(`ime${i + 1}`).innerHTML = '';
-                document.getElementById(`vreme${i + 1}`).innerHTML = '';
-            }
-        }
-    }
-    btns.forEach(b => b.classList.remove('btnChecked'));
-    let clickedBtn = document.querySelector(`button[id=${tezina}`);
-    clickedBtn.classList.add('btnChecked');
+    return arr;
 };
-top5('lako')
+
+const top5 = difficulty => {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const filtered = users.filter(u => u.difficulty === difficulty);
+    const sorted = sortByTime(filtered);
+
+    for (let i = 0; i < 5; i++) {
+        document.getElementById(`name${i + 1}`).innerHTML = sorted[i] ? sorted[i].name : '';
+        document.getElementById(`time${i + 1}`).innerHTML = sorted[i] ? sorted[i].time : '';
+    }
+
+    btns.forEach(b => b.classList.remove('btnChecked'));
+    const activeBtn = document.querySelector(`button[id=${difficulty}]`);
+    if (activeBtn) {
+        activeBtn.classList.add('btnChecked');
+    }
+};
+
+top5('easy');
 
 btns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -360,6 +309,6 @@ btns.forEach(btn => {
 radios.forEach(radio => {
     radio.addEventListener('click', () => {
         top5(radio.id);
-    })
+    });
 });
 
